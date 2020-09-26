@@ -13,9 +13,34 @@ pipeline {
 			echo 'Project Testing stage'
 			bat label: 'Test running', script: '''mvn test'''
 	       
-       }
+       		}
    	}
-	
+	  
+	/*stage('Publish Test Coverage Report') {
+         steps {
+           step([$class: 'JacocoPublisher', 
+     		 execPattern: 'target/*.exec',
+     		 classPattern: 'target/classes',
+     		 sourcePattern: 'src/main/java',
+     		 exclusionPattern: 'src/test*'
+		])
+            }
+        }*/
+	  
+	stage('Jacoco Coverage Report') {
+        steps{
+            jacoco()
+		}
+	}
+	  
+	stage('SonarQube'){
+         steps{
+            bat label: '', script: '''mvn sonar:sonar \
+		 -Dsonar.host.url=http://localhost:9000 \
+ 		-Dsonar.login=cd706bd2b230d3ca9d7d053b633f4753b23e43a6'''
+          }
+      }
+	  
 	stage('Maven Package'){
 		steps{
 			echo 'Project packaging stage'
